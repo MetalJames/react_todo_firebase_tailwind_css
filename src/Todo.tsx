@@ -10,21 +10,23 @@ const style = {
 };
 
 type TodoProps = {
-    todo: any
+    todo: any,
+    toggleComplete: any,
+    deleteTodo: any,
 }
 
 const Todo = (props: TodoProps) => {
 
-    const { todo } = props;
+    const { todo, toggleComplete, deleteTodo } = props;
 
     return (
         <li className={todo.completed ? style.liComplete : style.li}>
             <div className={style.row}>
-                <input type='checkbox' checked={todo.completed ? 'checked' : ''} />
+                <input onChange={() => toggleComplete(todo)} type='checkbox' checked={todo.completed ? true : false} />
                 {/* <input onChange={() => toggleComplete(todo)} type='checkbox' checked={todo.completed ? 'checked' : ''} /> */}
-                <p className={todo.completed ? style.textComplete : style.text}>{todo.text}</p>
+                <p onClick={() => toggleComplete(todo)} className={todo.completed ? style.textComplete : style.text}>{todo.text}</p>
             </div>
-            <button >{<FaRegTrashAlt />}</button>
+            <button onClick={() => deleteTodo(todo.id)}>{<FaRegTrashAlt />}</button>
         </li>
     )
 }

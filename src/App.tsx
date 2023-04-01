@@ -24,8 +24,21 @@ const style = {
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
 
   // Create todo
+  const createTodo = async (e: any) => {
+    e.preventDefault(e);
+    // if (input === '') {
+    //   alert('Please enter a valid todo');
+    //   return;
+    // }
+    await addDoc(collection(db, 'todos'), {
+      text: input,
+      completed: false,
+    });
+    setInput('');
+  };
 
   // Read todo from firebase
   useEffect(() => {
@@ -41,17 +54,26 @@ function App() {
   }, []);
 
   // Update todo in firebase
+  const toggleComplete = async (todo: { id: string; completed: boolean; }) => {
+    await updateDoc(doc(db, 'todos', todo.id), {
+      completed: !todo.completed,
+    });
+  };
 
   // Delete todo
+  const deleteTodo = async (id: string) => {
+    await deleteDoc(doc(db, 'todos', id));
+  };
 
   return (
     <div className={style.bg}>
       <div className={style.container}>
         <h3 className={style.heading}>Todo App</h3>
-        <form className={style.form}>
+        <form className={style.form} onSubmit={createTodo}>
           <input
-            // value={input}
-            // onChange={(e) => setInput(e.target.value)}
+            required
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
             className={style.input}
             type="text"
             placeholder="Add Todo"
@@ -62,10 +84,10 @@ function App() {
         </form>
         <ul>
           {todos.map((todo, index) => (
-            <Todo key={index} todo={todo} />
+            <Todo key={index} todo={todo} toggleComplete={toggleComplete} deleteTodo={deleteTodo} />
           ))}
         </ul>
-        <p className={style.count}>You have 2 todos</p>
+        {todos.length < 1 ? null : <p className={style.count}>You have {todos.length} todos</p>}
       </div>
     </div>
   );
